@@ -188,7 +188,7 @@ function buildPoiRows() {
     rowsHtml += `
       <div class="poi-row">
           <span class="index-label">${i}</span>
-          <input type="text" class="poi-sec-input" data-index="${i}" placeholder="Sector/No">
+          <input type="text" class="poi-sec-input" data-index="${i}" placeholder="POI No.">
           <input type="text" class="poi-name-input" data-index="${i}" placeholder="POI Name">
       </div>
     `;
@@ -782,7 +782,7 @@ function openSystemDetailModal(systemId, sysConfig) {
     `,
     buttons: [
       {
-        text: '<i class="fa-solid fa-arrow-left"></i> Back to Map',
+        text: '<i class="fa-solid fa-arrow-left"></i> Back',
         className: "btn-secondary",
         keepOpen: true,
         onClick: () => {
@@ -790,7 +790,7 @@ function openSystemDetailModal(systemId, sysConfig) {
         },
       },
       {
-        text: '<i class="fa-solid fa-floppy-disk"></i> Save & Return',
+        text: '<i class="fa-solid fa-floppy-disk"></i> Save',
         className: "",
         keepOpen: true,
         onClick: () => {
