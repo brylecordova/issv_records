@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISS Vanguard - Planet Log Terminal</title>
+    <link rel="stylesheet" href="./css/all.min.css" />
+    <link rel="stylesheet" href="./css/issv.css" />
+</head>
+
+<body>
+
+    <div class="container">
+        <header
+            style="display: flex; align-items: center; justify-content: center; gap: 16px; text-align: left; padding: 14px 18px;">
+            <img src="./img/logo.png" alt="ISS Vanguard"
+                style="height: 64px; width: auto; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255, 42, 75, 0.4)); flex-shrink: 0;">
+
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                <p class="header-main-title">PLANETARY & OUTBOUND</p>
+                <p class="header-sub-title">LOG TERMINAL</p>
+            </div>
+        </header>
+
+        <div id="main-menu-view" class="view active">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <label style="margin-bottom:0;"><i class="fa-solid fa-book-atlas"></i> Select Campaign</label>
+                </div>
+
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="campaign-search" placeholder="Search campaigns..."
+                        oninput="filterCampaigns()">
+                </div>
+
+                <div id="campaign-list"></div>
+                <button class="btn" style="width: 100%; margin-top: 8px; justify-content: center;"
+                    onclick="openCampaignModal(null)">
+                    <i class="fa-solid fa-plus"></i> New Campaign
+                </button>
+            </div>
+        </div>
+
+        <div id="campaign-view" class="view">
+            <div class="back-nav">
+                <button class="btn btn-secondary" onclick="switchView('main-menu-view')">
+                    <i class="fa-solid fa-chevron-left" style="color: var(--accent-red);"></i> Campaigns
+                </button>
+                <div class="campaign-header-title-container">
+                    <h2 id="current-campaign-title"></h2>
+                    <button class="btn btn-secondary btn-sm" onclick="openCampaignModal(currentCampaignId)"
+                        title="Edit Campaign Name" style="flex-shrink: 0;">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card" style="text-align: center; padding: 18px;" id="dash-log-card-wrapper">
+                <label style="margin-bottom: 8px;"><i class="fa-solid fa-route"></i> Outbound Systems Navigation</label>
+                <p style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 14px;" id="dash-log-desc">Track
+                    visited star systems and connection routes.</p>
+                <button class="btn" style="width: 100%; justify-content: center;" onclick="openLogModal()">
+                    <i class="fa-solid fa-expand"></i> <span id="dash-log-btn-label">Log System</span> (<span
+                        id="dash-log-count">0/0</span>)
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="planet-search" placeholder="Search visited planets..."
+                        oninput="filterPlanets()">
+                </div>
+
+                <button class="btn" style="width: 100%; justify-content: center; margin-bottom: 14px;"
+                    onclick="openPlanetForm(null)">
+                    <i class="fa-solid fa-globe"></i> Log New Planet Record
+                </button>
+
+                <label><i class="fa-solid fa-list-check"></i> Logged Planets</label>
+                <div id="planet-list" style="margin-top: 8px;"></div>
+            </div>
+        </div>
+
+        <div id="planet-form-view" class="view">
+            <div class="back-nav">
+                <button class="btn btn-secondary" onclick="switchView('campaign-view')">
+                    <i class="fa-solid fa-chevron-left" style="color: var(--accent-red);"></i> Dashboard
+                </button>
+                <button class="btn btn-danger btn-sm" id="delete-planet-btn" onclick="confirmDeletePlanet()">
+                    <i class="fa-solid fa-trash"></i> Delete Log
+                </button>
+            </div>
+
+            <form id="planet-record-form" onsubmit="savePlanetRecord(event)">
+                <input type="hidden" id="planet-id">
+
+                <div class="card">
+                    <label><i class="fa-solid fa-earth-americas"></i> Planet Name</label>
+                    <div class="bracket-capsule-container">
+                        <div class="bracket-capsule">
+                            <input type="text" id="planet-name" required placeholder="Log number / Planet Name"
+                                style="background:transparent; border:none; margin:0; text-align:center; font-weight:bold;">
+                        </div>
+                    </div>
+
+                    <label style="margin-top: 8px;"><i class="fa-solid fa-gem"></i> Remaining Unique Discoveries (4
+                        Slots)</label>
+                    <div class="grid-4">
+                        <input type="text" class="disc-slot" placeholder="1">
+                        <input type="text" class="disc-slot" placeholder="2">
+                        <input type="text" class="disc-slot" placeholder="3">
+                        <input type="text" class="disc-slot" placeholder="4">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <label><i class="fa-solid fa-triangle-exclamation"></i> Threats (Sectors & Names)</label>
+                    <div class="threat-row" style="margin-bottom: 4px;">
+                        <span
+                            style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Sector</span>
+                        <span
+                            style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Threat
+                            Name</span>
+                    </div>
+                    <div class="threat-row">
+                        <input type="text" class="threat-sec" placeholder="Sector">
+                        <input type="text" class="threat-nam" placeholder="Threat Name 1">
+                    </div>
+                    <div class="threat-row">
+                        <input type="text" class="threat-sec" placeholder="Sector">
+                        <input type="text" class="threat-nam" placeholder="Threat Name 2">
+                    </div>
+                    <div class="threat-row">
+                        <input type="text" class="threat-sec" placeholder="Sector">
+                        <input type="text" class="threat-nam" placeholder="Threat Name 3">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <label><i class="fa-solid fa-location-crosshairs"></i> Points of Interest (POI)</label>
+                    <div class="poi-table-header">
+                        <span>Sect.</span>
+                        <span>POI #</span>
+                        <span>POI Name</span>
+                    </div>
+                    <div id="poi-rows-container"></div>
+                </div>
+
+                <div class="card">
+                    <label><i class="fa-solid fa-note-sticky"></i> Mission Notes & Logbook</label>
+                    <textarea id="planet-notes"
+                        placeholder="Record important discoveries, environmental hazards, or ongoing campaign consequences..."></textarea>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%; justify-content: center; margin-bottom: 25px;">
+                    <i class="fa-solid fa-floppy-disk"></i> Save Planet Record
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="custom-modal" class="modal-overlay">
+        <div id="modal-box-wrapper" class="modal-box">
+            <div id="modal-title" class="modal-title"><i class="fa-solid fa-circle-info"></i> Notice</div>
+            <div id="modal-content"></div>
+            <div id="modal-buttons" class="modal-buttons"></div>
+        </div>
+    </div>
+
+    <script src="./js/issv.js"></script>
+</body>
+
+</html>
