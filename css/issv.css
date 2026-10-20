@@ -894,3 +894,112 @@ textarea {
   justify-content: flex-end;
   margin-top: 14px;
 }
+
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+  margin-bottom: 12px;
+  user-select: none;
+}
+
+.custom-dropdown-selected {
+  width: 100%;
+  background-color: var(--input-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-main);
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.custom-dropdown-selected:hover {
+  background-color: var(--input-bg-focus);
+  border-color: var(--accent-red);
+}
+
+.custom-dropdown.open .custom-dropdown-selected {
+  background-color: var(--input-bg-focus);
+  border-color: var(--accent-red);
+  box-shadow: 0 0 10px var(--accent-red-glow);
+}
+
+.custom-dropdown-selected i {
+  color: var(--accent-red);
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+}
+
+.custom-dropdown.open .custom-dropdown-selected i {
+  transform: rotate(180deg);
+}
+
+.custom-dropdown-options {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  background-color: #0b101c;
+  background-image: var(--bg-image-url);
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--accent-red);
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 15px var(--accent-red-glow);
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1000;
+}
+
+.custom-dropdown-options::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(2, 4, 8, 0.82);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.custom-dropdown.open .custom-dropdown-options {
+  max-height: 220px;
+  opacity: 1;
+  visibility: visible;
+}
+
+.custom-dropdown-option {
+  position: relative;
+  z-index: 1;
+  padding: 11px 14px;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.custom-dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.custom-dropdown-option:hover {
+  background: rgba(255, 42, 75, 0.2);
+  color: #ffffff;
+}
+
+.custom-dropdown-option.selected {
+  background: rgba(255, 42, 75, 0.3);
+  color: var(--accent-red);
+  font-weight: bold;
+}

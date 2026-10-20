@@ -277,20 +277,37 @@ function filterCampaigns() {
 function openCampaignModal(campaignId) {
   const isEdit = campaignId !== null;
   let campaignName = "";
+  let selectedType = "base_game";
   if (isEdit) {
     const camp = db.campaigns.find((c) => c.id === campaignId);
-    if (camp) campaignName = camp.name;
+    if (camp) {
+      campaignName = camp.name;
+      selectedType = camp.type || "base_game";
+    }
   }
+
+  const typeLabels = {
+    base_game: "Base Game",
+    deadly_frontier: "Deadly Frontier",
+    lost_fleet: "Lost Fleet",
+  };
 
   const typeSelectHtml = isEdit
     ? ""
     : `
       <label style="margin-top: 10px;"><i class="fa-solid fa-layer-group"></i> Campaign System / Expansion</label>
-      <select id="modal-campaign-type">
-          <option value="base_game">Base Game</option>
-          <option value="deadly_frontier">Deadly Frontier</option>
-          <option value="lost_fleet">Lost Fleet</option>
-      </select>
+      <div class="custom-dropdown" id="modal-campaign-type-dropdown">
+          <div class="custom-dropdown-selected" onclick="toggleCustomDropdown(event)">
+              <span id="custom-dropdown-label">${typeLabels[selectedType]}</span>
+              <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="custom-dropdown-options" id="custom-dropdown-options-list">
+              <div class="custom-dropdown-option ${selectedType === "base_game" ? "selected" : ""}" data-value="base_game" onclick="selectCustomDropdownOption('base_game', 'Base Game', event)">Base Game</div>
+              <div class="custom-dropdown-option ${selectedType === "deadly_frontier" ? "selected" : ""}" data-value="deadly_frontier" onclick="selectCustomDropdownOption('deadly_frontier', 'Deadly Frontier', event)">Deadly Frontier</div>
+              <div class="custom-dropdown-option ${selectedType === "lost_fleet" ? "selected" : ""}" data-value="lost_fleet" onclick="selectCustomDropdownOption('lost_fleet', 'Lost Fleet', event)">Lost Fleet</div>
+          </div>
+      </div>
+      <input type="hidden" id="modal-campaign-type" value="${selectedType}">
     `;
 
   showModal({
@@ -322,12 +339,12 @@ function openCampaignModal(campaignId) {
                 }
               }
             } else {
-              const typeSelect = document.getElementById("modal-campaign-type");
-              const selectedType = typeSelect ? typeSelect.value : "base_game";
+              const typeInput = document.getElementById("modal-campaign-type");
+              const chosenType = typeInput ? typeInput.value : "base_game";
               const newCampaign = {
                 id: "camp_" + Date.now(),
                 name: val,
-                type: selectedType,
+                type: chosenType,
                 planets: [],
                 log999: {},
               };
@@ -351,6 +368,40 @@ function openCampaignModal(campaignId) {
     ],
   });
 }
+
+function toggleCustomDropdown(e) {
+  e.stopPropagation();
+  const dropdown = document.getElementById("modal-campaign-type-dropdown");
+  if (dropdown) {
+    dropdown.classList.toggle("open");
+  }
+}
+
+function selectCustomDropdownOption(value, labelText, e) {
+  e.stopPropagation();
+  const hiddenInput = document.getElementById("modal-campaign-type");
+  const labelEl = document.getElementById("custom-dropdown-label");
+  const dropdown = document.getElementById("modal-campaign-type-dropdown");
+
+  if (hiddenInput) hiddenInput.value = value;
+  if (labelEl) labelEl.innerText = labelText;
+
+  const options = document.querySelectorAll(".custom-dropdown-option");
+  options.forEach((opt) => {
+    if (opt.getAttribute("data-value") === value) {
+      opt.classList.add("selected");
+    } else {
+      opt.classList.remove("selected");
+    }
+  });
+
+  if (dropdown) dropdown.classList.remove("open");
+}
+
+window.addEventListener("click", () => {
+  const dropdown = document.getElementById("modal-campaign-type-dropdown");
+  if (dropdown) dropdown.classList.remove("open");
+});
 
 function confirmDeleteCampaign(campaignId) {
   const camp = db.campaigns.find((c) => c.id === campaignId);
